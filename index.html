@@ -628,17 +628,20 @@ function openConfig() {
   document.getElementById("config-overlay").style.display = "flex";
 }
 
+// ── DEFAULT API URL (pre-configured) ─────────────────────────
+const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyoolM_WLdJdI7qEE_VkMPZVk41IueZKZYng5sD9otmnGvKru9bwYrJVw1pO-LogDRq/exec";
+
 // ── BOOT ──────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  const url  = localStorage.getItem(CONFIG_KEY);
+  // Use stored URL, or fall back to the default baked-in URL
+  if (!localStorage.getItem(CONFIG_KEY)) {
+    localStorage.setItem(CONFIG_KEY, DEFAULT_API_URL);
+  }
   const name = localStorage.getItem(NAME_KEY) || "Safiri Kenya";
   document.getElementById("site-title").textContent = name;
   document.title = name + " — Public Transport Directory";
-
-  if (url) {
-    document.getElementById("config-overlay").style.display = "none";
-    loadData();
-  }
+  document.getElementById("config-overlay").style.display = "none";
+  loadData();
 });
 
 // ── FETCH DATA ────────────────────────────────────────────────
