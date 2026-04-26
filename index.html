@@ -1,655 +1,563 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Safiri Kenya — Public Transport Directory</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-
   <style>
-    /* ── Variables ─────────────────────────────────────────── */
     :root {
       --green:      #1a6b3c;
       --green-mid:  #22873e;
       --green-lite: #d4edda;
       --red:        #c0392b;
+      --red-lite:   #fdf0ef;
       --gold:       #f5a623;
+      --gold-lite:  #fff8e1;
       --ink:        #0d1a12;
       --muted:      #5a7060;
       --surface:    #f4f9f5;
       --card:       #ffffff;
       --border:     #c8ddd0;
-      --mono:       'DM Mono', monospace;
       --sans:       'Sora', sans-serif;
+      --mono:       'DM Mono', monospace;
+      --radius:     12px;
+      --shadow:     0 8px 32px rgba(26,107,60,.12);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--sans); background: var(--surface); color: var(--ink); min-height: 100vh; }
+    a { color: var(--green); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    body {
-      font-family: var(--sans);
-      background: var(--surface);
-      color: var(--ink);
-      min-height: 100vh;
-    }
+    /* ── PAGES ── */
+    .page { display: none; }
+    .page.active { display: block; }
 
-    /* ── Header ─────────────────────────────────────────────── */
+    /* ── HEADER ── */
     header {
-      background: var(--green);
-      color: #fff;
-      padding: 0 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+      background: var(--green); color: #fff;
+      padding: 0 1.5rem; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.22);
     }
-
     .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-      gap: 1rem;
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; gap: 1rem;
     }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: .6rem;
-      text-decoration: none;
-      color: #fff;
-    }
-
+    .logo { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
     .logo-icon {
-      width: 36px; height: 36px;
-      background: var(--gold);
-      border-radius: 8px;
-      display: grid; place-items: center;
-      font-size: 1.2rem;
+      width: 36px; height: 36px; background: var(--gold);
+      border-radius: 8px; display: grid; place-items: center; font-size: 1.2rem;
     }
-
-    .logo-text { font-weight: 800; font-size: 1.15rem; letter-spacing: -.02em; }
-    .logo-sub  { font-size: .65rem; opacity: .75; font-weight: 300; letter-spacing: .08em; text-transform: uppercase; }
-
-    .header-badge {
-      font-family: var(--mono);
-      font-size: .7rem;
-      background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.3);
-      border-radius: 20px;
-      padding: .25rem .75rem;
-      white-space: nowrap;
+    .logo-text  { font-weight: 800; font-size: 1.1rem; letter-spacing: -.02em; color: #fff; }
+    .logo-sub   { font-size: .62rem; opacity: .7; font-weight: 300; letter-spacing: .08em; text-transform: uppercase; }
+    .nav { display: flex; align-items: center; gap: .5rem; }
+    .nav-btn {
+      padding: .45rem .9rem; border-radius: 8px; font-family: var(--sans);
+      font-size: .82rem; font-weight: 600; cursor: pointer; border: none; transition: all .15s;
     }
+    .nav-btn-ghost { background: rgba(255,255,255,.12); color: #fff; border: 1.5px solid rgba(255,255,255,.3); }
+    .nav-btn-ghost:hover { background: rgba(255,255,255,.22); }
+    .nav-btn-gold  { background: var(--gold); color: var(--ink); }
+    .nav-btn-gold:hover { opacity: .9; }
+    .nav-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--gold); color: var(--ink);
+      font-weight: 800; font-size: .85rem;
+      display: grid; place-items: center; cursor: pointer;
+      border: 2px solid rgba(255,255,255,.4);
+      transition: transform .15s;
+    }
+    .nav-avatar:hover { transform: scale(1.08); }
 
-    /* ── Hero ───────────────────────────────────────────────── */
+    /* ── HERO ── */
     .hero {
-      background: linear-gradient(135deg, var(--green) 0%, #145c32 60%, #0d3d20 100%);
-      color: #fff;
-      padding: 3.5rem 1.5rem 4.5rem;
-      position: relative;
-      overflow: hidden;
+      background: linear-gradient(135deg, var(--green) 0%, #145c32 55%, #0d3d20 100%);
+      color: #fff; padding: 3.5rem 1.5rem 4.5rem; position: relative; overflow: hidden;
     }
-
     .hero::before {
-      content: "";
-      position: absolute; inset: 0;
-      background-image: radial-gradient(circle at 70% 50%, rgba(245,166,35,.12) 0%, transparent 60%);
+      content: ""; position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 75% 40%, rgba(245,166,35,.14) 0%, transparent 55%);
     }
-
     .hero-inner { max-width: 800px; margin: 0 auto; position: relative; text-align: center; }
-
     .hero-tag {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: .72rem;
-      background: rgba(245,166,35,.2);
-      color: var(--gold);
-      border: 1px solid rgba(245,166,35,.4);
-      border-radius: 20px;
-      padding: .3rem .9rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 1.2rem;
+      display: inline-block; font-family: var(--mono); font-size: .72rem;
+      background: rgba(245,166,35,.2); color: var(--gold);
+      border: 1px solid rgba(245,166,35,.4); border-radius: 20px;
+      padding: .3rem .9rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.2rem;
     }
-
     .hero h1 {
-      font-size: clamp(1.9rem, 5vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -.03em;
-      margin-bottom: 1rem;
+      font-size: clamp(1.9rem,5vw,3.2rem); font-weight: 800;
+      line-height: 1.1; letter-spacing: -.03em; margin-bottom: 1rem;
     }
-
     .hero h1 span { color: var(--gold); }
-
-    .hero p {
-      font-size: 1.05rem;
-      line-height: 1.65;
-      opacity: .85;
-      max-width: 580px;
-      margin: 0 auto 2rem;
-      font-weight: 300;
-    }
-
-    /* ── Search bar ─────────────────────────────────────────── */
-    .search-wrap {
-      display: flex;
-      gap: .5rem;
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
+    .hero p { font-size: 1rem; line-height: 1.65; opacity: .85; max-width: 560px; margin: 0 auto 2rem; font-weight: 300; }
+    .search-wrap { display: flex; gap: .5rem; max-width: 540px; margin: 0 auto; }
     .search-wrap input {
-      flex: 1;
-      padding: .85rem 1.1rem;
-      font-family: var(--sans);
-      font-size: .95rem;
-      border: 2px solid rgba(255,255,255,.3);
-      border-radius: 10px;
-      background: rgba(255,255,255,.12);
-      color: #fff;
-      outline: none;
+      flex: 1; padding: .85rem 1.1rem; font-family: var(--sans); font-size: .95rem;
+      border: 2px solid rgba(255,255,255,.3); border-radius: 10px;
+      background: rgba(255,255,255,.12); color: #fff; outline: none;
       transition: border-color .2s, background .2s;
     }
-
     .search-wrap input::placeholder { color: rgba(255,255,255,.5); }
-    .search-wrap input:focus {
-      border-color: var(--gold);
-      background: rgba(255,255,255,.18);
-    }
+    .search-wrap input:focus { border-color: var(--gold); background: rgba(255,255,255,.18); }
 
-    .btn {
-      padding: .85rem 1.4rem;
-      border: none;
-      border-radius: 10px;
-      font-family: var(--sans);
-      font-weight: 700;
-      font-size: .9rem;
-      cursor: pointer;
-      transition: transform .15s, opacity .15s;
-    }
-    .btn:active { transform: scale(.97); }
-
-    .btn-gold { background: var(--gold); color: var(--ink); }
-    .btn-gold:hover { opacity: .9; }
-
-    .btn-outline {
-      background: transparent;
-      border: 2px solid rgba(255,255,255,.4);
-      color: #fff;
-    }
-    .btn-outline:hover { background: rgba(255,255,255,.1); }
-
-    /* ── Stats strip ─────────────────────────────────────────── */
-    .stats {
-      background: var(--ink);
-      color: #fff;
-      padding: .8rem 1.5rem;
-    }
-
-    .stats-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      display: flex; align-items: center; gap: .5rem;
-      font-family: var(--mono);
-      font-size: .8rem;
-    }
-
+    /* ── STATS ── */
+    .stats { background: var(--ink); color: #fff; padding: .8rem 1.5rem; }
+    .stats-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+    .stat { display: flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .8rem; }
     .stat-num { font-weight: 700; color: var(--gold); font-size: 1rem; }
 
-    /* ── Filters ─────────────────────────────────────────────── */
+    /* ── ALERT ── */
+    .alert-wrap { max-width: 1200px; margin: 1.5rem auto 0; padding: 0 1.5rem; }
+    .alert-box {
+      display: flex; align-items: flex-start; gap: .75rem;
+      background: var(--gold-lite); border: 1.5px solid #ffe082;
+      border-radius: 10px; padding: .9rem 1.1rem;
+      font-size: .84rem; line-height: 1.5;
+    }
+
+    /* ── FILTERS ── */
     .filters {
-      max-width: 1200px;
-      margin: 2rem auto 0;
-      padding: 0 1.5rem;
-      display: flex;
-      gap: .75rem;
-      flex-wrap: wrap;
-      align-items: center;
+      max-width: 1200px; margin: 1.5rem auto 0; padding: 0 1.5rem;
+      display: flex; gap: .6rem; flex-wrap: wrap; align-items: center;
     }
-
-    .filter-label { font-size: .8rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-
+    .filter-label { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
     select {
-      padding: .55rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-family: var(--sans);
-      font-size: .88rem;
-      background: var(--card);
-      color: var(--ink);
-      cursor: pointer;
-      outline: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right .75rem center;
-      padding-right: 2rem;
+      padding: .5rem .9rem; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: var(--sans); font-size: .86rem; background: var(--card); color: var(--ink);
+      cursor: pointer; outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7060' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right .7rem center; padding-right: 1.8rem;
     }
-
     select:focus { border-color: var(--green); }
-
     .chip {
-      padding: .45rem 1rem;
-      border-radius: 20px;
-      border: 1.5px solid var(--border);
-      background: var(--card);
-      font-family: var(--sans);
-      font-size: .82rem;
-      cursor: pointer;
-      transition: all .15s;
-      font-weight: 600;
-      color: var(--muted);
+      padding: .42rem .9rem; border-radius: 20px; border: 1.5px solid var(--border);
+      background: var(--card); font-family: var(--sans); font-size: .8rem;
+      cursor: pointer; transition: all .15s; font-weight: 600; color: var(--muted);
     }
     .chip.active, .chip:hover { background: var(--green); color: #fff; border-color: var(--green); }
 
-    /* ── Grid ───────────────────────────────────────────────── */
-    .grid-wrap {
-      max-width: 1200px;
-      margin: 1.5rem auto 4rem;
-      padding: 0 1.5rem;
-    }
+    /* ── GRID ── */
+    .grid-wrap { max-width: 1200px; margin: 1.5rem auto 4rem; padding: 0 1.5rem; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .result-count  { font-family: var(--mono); font-size: .82rem; color: var(--muted); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 1.1rem; }
 
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .result-count {
-      font-family: var(--mono);
-      font-size: .82rem;
-      color: var(--muted);
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.25rem;
-    }
-
-    /* ── Card ───────────────────────────────────────────────── */
+    /* ── CARD ── */
     .card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 1.3rem;
-      display: flex;
-      flex-direction: column;
-      gap: .8rem;
+      background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem; display: flex; flex-direction: column; gap: .75rem;
       transition: box-shadow .2s, transform .2s, border-color .2s;
       animation: fadeUp .35s ease both;
     }
-
-    .card:hover {
-      box-shadow: 0 8px 28px rgba(26,107,60,.13);
-      transform: translateY(-3px);
-      border-color: var(--green);
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: .5rem;
-    }
-
-    .sacco-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      line-height: 1.25;
-      color: var(--ink);
-    }
-
-    .verified-badge {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: .3rem;
-      font-family: var(--mono);
-      font-size: .68rem;
-      font-weight: 500;
-      padding: .25rem .6rem;
-      border-radius: 6px;
-    }
-
-    .verified-badge.yes { background: var(--green-lite); color: var(--green); }
-    .verified-badge.no  { background: #fdf0ef; color: var(--red); }
-
+    .card:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--green); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
+    .sacco-name  { font-size: 1rem; font-weight: 700; line-height: 1.25; }
+    .badge { flex-shrink:0; display:flex; align-items:center; gap:.25rem; font-family:var(--mono); font-size:.66rem; font-weight:500; padding:.22rem .55rem; border-radius:6px; }
+    .badge.yes { background: var(--green-lite); color: var(--green); }
+    .badge.no  { background: var(--red-lite);   color: var(--red);   }
     .route-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: .4rem .75rem;
-      font-size: .85rem;
-      font-weight: 600;
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: .38rem .7rem; font-size: .83rem; font-weight: 600;
     }
-
-    .route-arrow { color: var(--green); font-weight: 300; }
-
-    .card-meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .45rem;
-    }
-
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: .15rem;
-    }
-
-    .meta-label {
-      font-size: .7rem;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .meta-value {
-      font-size: .88rem;
-      color: var(--ink);
-      font-weight: 500;
-    }
-
-    .fare-highlight {
-      font-family: var(--mono);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--green);
-    }
-
-    .card-footer {
-      display: flex;
-      gap: .5rem;
-      margin-top: .2rem;
-    }
-
+    .route-arrow { color: var(--green); }
+    .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+    .meta-item { display: flex; flex-direction: column; gap: .12rem; }
+    .meta-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+    .meta-value { font-size: .86rem; color: var(--ink); font-weight: 500; }
+    .fare-val   { font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: var(--green); }
+    .card-footer { display: flex; gap: .45rem; margin-top: .15rem; }
     .card-link {
-      flex: 1;
-      padding: .55rem;
-      text-align: center;
-      border-radius: 8px;
-      font-size: .8rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: opacity .15s;
+      flex: 1; padding: .5rem; text-align: center; border-radius: 8px;
+      font-size: .78rem; font-weight: 700; text-decoration: none; transition: opacity .15s;
     }
-    .card-link:hover { opacity: .85; }
-
+    .card-link:hover { opacity: .85; text-decoration: none; }
     .link-site { background: var(--green); color: #fff; }
     .link-tel  { background: var(--surface); border: 1.5px solid var(--border); color: var(--ink); }
 
-    /* ── Empty / Loading ─────────────────────────────────────── */
-    .state-box {
-      text-align: center;
-      padding: 4rem 1rem;
-      color: var(--muted);
-    }
-
+    /* ── STATE BOX ── */
+    .state-box { text-align: center; padding: 4rem 1rem; color: var(--muted); grid-column: 1/-1; }
     .state-box .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
-    .state-box h3    { font-size: 1.2rem; margin-bottom: .5rem; color: var(--ink); }
-    .state-box p     { font-size: .9rem; line-height: 1.5; }
+    .state-box h3    { font-size: 1.15rem; margin-bottom: .5rem; color: var(--ink); }
+    .spinner { width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem; }
+    @keyframes spin { to{transform:rotate(360deg)} }
 
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--green);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Alert banner ────────────────────────────────────────── */
-    .alert {
-      max-width: 1200px;
-      margin: 1.5rem auto 0;
-      padding: 0 1.5rem;
-    }
-
-    .alert-box {
-      display: flex;
-      align-items: flex-start;
-      gap: .75rem;
-      background: #fff8e1;
-      border: 1.5px solid #ffe082;
-      border-radius: 10px;
-      padding: .9rem 1.1rem;
-      font-size: .85rem;
-      line-height: 1.5;
-    }
-
-    .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
-
-    /* ── Footer ─────────────────────────────────────────────── */
-    footer {
-      background: var(--ink);
-      color: rgba(255,255,255,.6);
-      text-align: center;
+    /* ── AUTH PAGES ── */
+    .auth-page {
+      min-height: calc(100vh - 64px);
+      display: flex; align-items: center; justify-content: center;
       padding: 2rem 1.5rem;
-      font-size: .8rem;
-      line-height: 1.7;
+      background: linear-gradient(160deg, var(--surface) 0%, #e8f5ee 100%);
     }
+    .auth-card {
+      background: var(--card); border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(26,107,60,.14);
+      padding: 2.5rem 2rem; width: 100%; max-width: 440px;
+      border: 1.5px solid var(--border);
+      animation: fadeUp .4s ease both;
+    }
+    .auth-logo { text-align: center; margin-bottom: 1.8rem; }
+    .auth-logo .big-icon {
+      width: 56px; height: 56px; background: var(--green);
+      border-radius: 14px; display: grid; place-items: center;
+      font-size: 1.6rem; margin: 0 auto .75rem;
+      box-shadow: 0 6px 20px rgba(26,107,60,.3);
+    }
+    .auth-logo h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; }
+    .auth-logo p  { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
 
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .4rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+    .input {
+      width: 100%; padding: .75rem 1rem;
+      border: 1.5px solid var(--border); border-radius: 9px;
+      font-family: var(--sans); font-size: .92rem; color: var(--ink);
+      background: var(--surface); outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .input:focus { border-color: var(--green); background: #fff; }
+    .input.error { border-color: var(--red); }
+
+    .btn-primary {
+      width: 100%; padding: .85rem; border: none; border-radius: 10px;
+      background: var(--green); color: #fff;
+      font-family: var(--sans); font-weight: 700; font-size: .95rem;
+      cursor: pointer; transition: opacity .2s, transform .15s;
+      margin-top: .5rem;
+    }
+    .btn-primary:hover   { opacity: .9; }
+    .btn-primary:active  { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+
+    .auth-switch { text-align: center; margin-top: 1.2rem; font-size: .85rem; color: var(--muted); }
+    .auth-switch a { color: var(--green); font-weight: 700; cursor: pointer; }
+
+    .msg-box { border-radius: 8px; padding: .7rem 1rem; font-size: .84rem; margin-bottom: 1rem; display: none; }
+    .msg-box.error   { background: var(--red-lite); color: var(--red); border: 1px solid #f5c6cb; display: block; }
+    .msg-box.success { background: var(--green-lite); color: var(--green); border: 1px solid #b8dfc5; display: block; }
+
+    /* ── PROFILE PAGE ── */
+    .profile-page { max-width: 720px; margin: 2.5rem auto 4rem; padding: 0 1.5rem; }
+    .profile-header {
+      display: flex; align-items: center; gap: 1.2rem;
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      margin-bottom: 1.2rem; box-shadow: var(--shadow);
+    }
+    .profile-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      font-size: 1.5rem; font-weight: 800;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .profile-name  { font-size: 1.3rem; font-weight: 800; }
+    .profile-email { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+    .profile-role  {
+      display: inline-block; font-family: var(--mono); font-size: .68rem;
+      background: var(--green-lite); color: var(--green);
+      border-radius: 6px; padding: .2rem .55rem; margin-top: .4rem; font-weight: 500;
+    }
+    .profile-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 1rem; margin-bottom: 1.2rem; }
+    .profile-stat-card {
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem; text-align: center;
+    }
+    .profile-stat-num  { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: var(--green); }
+    .profile-stat-label{ font-size: .78rem; color: var(--muted); margin-top: .25rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+    .profile-info {
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .profile-info h3 { font-size: .9rem; font-weight: 700; margin-bottom: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--surface); }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { font-size: .83rem; color: var(--muted); font-weight: 600; }
+    .info-val { font-size: .87rem; color: var(--ink); font-weight: 500; }
+    .btn-logout {
+      width: 100%; padding: .75rem; border: 2px solid var(--red);
+      border-radius: 10px; background: transparent; color: var(--red);
+      font-family: var(--sans); font-weight: 700; font-size: .9rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-logout:hover { background: var(--red); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--ink); color: rgba(255,255,255,.55); text-align: center; padding: 2rem 1.5rem; font-size: .8rem; line-height: 1.7; }
     footer strong { color: #fff; }
 
-    /* ── CONFIG MODAL (first-time setup) ─────────────────────── */
-    #config-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.6);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 999;
-      backdrop-filter: blur(4px);
-    }
+    /* ── UTIL ── */
+    .btn { padding: .55rem 1.1rem; border: none; border-radius: 8px; font-family: var(--sans); font-weight: 700; font-size: .88rem; cursor: pointer; transition: all .15s; }
+    .btn:active { transform: scale(.97); }
 
-    .config-modal {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 480px;
-      width: 90%;
-      box-shadow: 0 24px 60px rgba(0,0,0,.3);
-    }
-
-    .config-modal h2 { font-size: 1.3rem; margin-bottom: .5rem; }
-    .config-modal p  { font-size: .88rem; color: var(--muted); margin-bottom: 1.2rem; line-height: 1.5; }
-
-    .config-modal label { display: block; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .35rem; color: var(--muted); }
-
-    .config-modal input[type="url"],
-    .config-modal input[type="text"] {
-      width: 100%;
-      padding: .75rem 1rem;
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      font-family: var(--mono);
-      font-size: .82rem;
-      margin-bottom: 1rem;
-      outline: none;
-    }
-
-    .config-modal input:focus { border-color: var(--green); }
-
-    /* ── Responsive ─────────────────────────────────────────── */
-    @media (max-width: 600px) {
-      .header-badge { display: none; }
-      .hero h1      { font-size: 1.75rem; }
-      .search-wrap  { flex-direction: column; }
-      .cards        { grid-template-columns: 1fr; }
-      .card-meta    { grid-template-columns: 1fr 1fr; }
+    @media(max-width:600px){
+      .hero h1 { font-size: 1.75rem; }
+      .search-wrap { flex-direction: column; }
+      .cards { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .nav .nav-label { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── Config overlay (shown until API URL is set) ─────────── -->
-<div id="config-overlay">
-  <div class="config-modal">
-    <h2>⚙️ Connect your Google Sheet</h2>
-    <p>Paste the <strong>Web App URL</strong> you got when deploying your Apps Script. This is stored locally in your browser and never shared.</p>
-
-    <label for="api-url-input">Apps Script Web App URL</label>
-    <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec"/>
-
-    <label for="site-name-input">Site Name (optional)</label>
-    <input type="text" id="site-name-input" value="Safiri Kenya" placeholder="Safiri Kenya"/>
-
-    <button class="btn btn-gold" style="width:100%" onclick="saveConfig()">Save & Load Data →</button>
-  </div>
-</div>
-
-<!-- ── Header ─────────────────────────────────────────────── -->
+<!-- ═══ HEADER ═══════════════════════════════════════════════ -->
 <header>
   <div class="header-inner">
-    <a class="logo" href="#">
+    <div class="logo" onclick="showPage('home')">
       <div class="logo-icon">🚌</div>
       <div>
-        <div class="logo-text" id="site-title">Safiri Kenya</div>
+        <div class="logo-text">Safiri Kenya</div>
         <div class="logo-sub">Public Transport Directory</div>
       </div>
-    </a>
-    <div class="header-badge">🛡️ Verified Saccos Only</div>
-    <button class="btn btn-outline" style="font-size:.8rem;padding:.5rem .9rem" onclick="openConfig()">⚙️ Settings</button>
+    </div>
+    <nav class="nav" id="main-nav">
+      <!-- Filled by renderNav() -->
+    </nav>
   </div>
 </header>
 
-<!-- ── Hero ───────────────────────────────────────────────── -->
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-tag">🇰🇪 Trusted Transport Data</div>
-    <h1>Find <span>verified</span> matatus & buses<br>across Kenya</h1>
-    <p>We compile official fares, routes, and contact details from registered SACCOs — so you travel safe and pay the right price.</p>
-    <div class="search-wrap">
-      <input type="text" id="search-input" placeholder="Search route, SACCO, county…" onkeyup="handleSearch(event)"/>
-      <button class="btn btn-gold" onclick="doSearch()">Search</button>
+<!-- ═══ PAGE: HOME ════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">🇰🇪 Verified Transport Data</div>
+      <h1>Find <span>safe, verified</span> matatus<br>&amp; buses across Kenya</h1>
+      <p>Official fares, routes and contacts from registered SACCOs — travel safe, pay the right price.</p>
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Search route, SACCO, county…" onkeyup="handleSearch(event)"/>
+        <button class="btn nav-btn-gold" onclick="doSearch()">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stats-inner">
+      <div class="stat"><span class="stat-num" id="stat-saccos">—</span>&nbsp;SACCOs</div>
+      <div class="stat"><span class="stat-num" id="stat-counties">—</span>&nbsp;Counties</div>
+      <div class="stat"><span class="stat-num" id="stat-verified">—</span>&nbsp;Verified</div>
+      <div class="stat"><span class="stat-num" id="stat-users">—</span>&nbsp;Members</div>
+      <div style="margin-left:auto;font-size:.72rem;opacity:.45;font-family:var(--mono)">Updated: <span id="last-updated">—</span></div>
     </div>
   </div>
-</section>
 
-<!-- ── Stats ──────────────────────────────────────────────── -->
-<div class="stats">
-  <div class="stats-inner">
-    <div class="stat"><span class="stat-num" id="stat-saccos">—</span> SACCOs listed</div>
-    <div class="stat"><span class="stat-num" id="stat-counties">—</span> Counties covered</div>
-    <div class="stat"><span class="stat-num" id="stat-verified">—</span> Verified entries</div>
-    <div style="margin-left:auto;font-size:.75rem;opacity:.5;font-family:var(--mono)">Last updated: <span id="last-updated">—</span></div>
+  <div class="alert-wrap">
+    <div class="alert-box">
+      <span>⚠️</span>
+      <span><strong>Stay safe:</strong> Always confirm fares with your SACCO before boarding. Report suspicious sites at <strong>0800 723 151</strong> (NTSA free line).</span>
+    </div>
   </div>
+
+  <div class="filters">
+    <span class="filter-label">Filter:</span>
+    <select id="county-filter" onchange="applyFilters()"><option value="">All Counties</option></select>
+    <select id="route-filter"  onchange="applyFilters()"><option value="">All Routes</option></select>
+    <button class="chip active" id="chip-all"       onclick="setVerified('all')">All</button>
+    <button class="chip"        id="chip-verified"  onclick="setVerified('yes')">✅ Verified</button>
+    <button class="chip"        id="chip-unverified" onclick="setVerified('no')">⚠️ Unverified</button>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="result-header">
+      <span class="result-count" id="result-count"></span>
+      <span style="font-size:.8rem;color:var(--muted);font-family:var(--mono)" id="filter-status"></span>
+    </div>
+    <div class="cards" id="cards-container">
+      <div class="state-box">
+        <div class="spinner"></div>
+        <h3>Loading transport data…</h3>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Safiri Kenya</strong> — Fighting transport fraud, one route at a time.<br>
+    Data from registered SACCO websites &amp; NTSA public records.<br>
+    <span style="opacity:.4;font-size:.75rem">Built with Google Sheets + GitHub Pages</span>
+  </footer>
 </div>
 
-<!-- ── Alert ──────────────────────────────────────────────── -->
-<div class="alert">
-  <div class="alert-box">
-    <span class="alert-icon">⚠️</span>
-    <span><strong>Stay safe:</strong> Always confirm fares directly with your SACCO before boarding. Report suspicious websites or overcharging at <strong>0800 723 151</strong> (NTSA free line).</span>
-  </div>
-</div>
-
-<!-- ── Filters ────────────────────────────────────────────── -->
-<div class="filters">
-  <span class="filter-label">Filter:</span>
-  <select id="county-filter" onchange="applyFilters()">
-    <option value="">All Counties</option>
-  </select>
-  <select id="route-filter" onchange="applyFilters()">
-    <option value="">All Routes</option>
-  </select>
-  <button class="chip active" id="chip-all"      onclick="setVerified('all')">All</button>
-  <button class="chip"        id="chip-verified"  onclick="setVerified('yes')">✅ Verified</button>
-  <button class="chip"        id="chip-unverified" onclick="setVerified('no')">⚠️ Unverified</button>
-</div>
-
-<!-- ── Grid ───────────────────────────────────────────────── -->
-<div class="grid-wrap">
-  <div class="result-header">
-    <span class="result-count" id="result-count"></span>
-    <span style="font-size:.8rem;color:var(--muted);font-family:var(--mono)" id="filter-status"></span>
-  </div>
-  <div class="cards" id="cards-container">
-    <div class="state-box" style="grid-column:1/-1">
-      <div class="spinner"></div>
-      <h3>Loading transport data…</h3>
-      <p>Fetching from your Google Sheet</p>
+<!-- ═══ PAGE: SIGN UP ═════════════════════════════════════════ -->
+<div class="page" id="page-register">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="big-icon">🚌</div>
+        <h2>Create Account</h2>
+        <p>Join the Safiri Kenya community</p>
+      </div>
+      <div class="msg-box" id="reg-msg"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input class="input" id="reg-fname" type="text" placeholder="John"/>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input class="input" id="reg-lname" type="text" placeholder="Doe"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input class="input" id="reg-email" type="email" placeholder="john@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input class="input" id="reg-contact" type="tel" placeholder="+254 7XX XXX XXX"/>
+      </div>
+      <div class="form-group">
+        <label>County</label>
+        <select class="input" id="reg-county">
+          <option value="">Select your county</option>
+          <option>Baringo</option><option>Bomet</option><option>Bungoma</option><option>Busia</option>
+          <option>Elgeyo-Marakwet</option><option>Embu</option><option>Garissa</option><option>Homa Bay</option>
+          <option>Isiolo</option><option>Kajiado</option><option>Kakamega</option><option>Kericho</option>
+          <option>Kiambu</option><option>Kilifi</option><option>Kirinyaga</option><option>Kisii</option>
+          <option>Kisumu</option><option>Kitui</option><option>Kwale</option><option>Laikipia</option>
+          <option>Lamu</option><option>Machakos</option><option>Makueni</option><option>Mandera</option>
+          <option>Marsabit</option><option>Meru</option><option>Migori</option><option>Mombasa</option>
+          <option>Murang'a</option><option>Nairobi</option><option>Nakuru</option><option>Nandi</option>
+          <option>Narok</option><option>Nyamira</option><option>Nyandarua</option><option>Nyeri</option>
+          <option>Samburu</option><option>Siaya</option><option>Taita-Taveta</option><option>Tana River</option>
+          <option>Tharaka-Nithi</option><option>Trans Nzoia</option><option>Turkana</option>
+          <option>Uasin Gishu</option><option>Vihiga</option><option>Wajir</option><option>West Pokot</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(min. 6 characters)</span></label>
+        <input class="input" id="reg-password" type="password" placeholder="Create a strong password"/>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input class="input" id="reg-confirm" type="password" placeholder="Repeat password"/>
+      </div>
+      <button class="btn-primary" id="reg-btn" onclick="doRegister()">Create Account →</button>
+      <div class="auth-switch">Already have an account? <a onclick="showPage('login')">Sign in</a></div>
     </div>
   </div>
 </div>
 
-<!-- ── Footer ────────────────────────────────────────────── -->
-<footer>
-  <strong>Safiri Kenya</strong> — Fighting transport fraud, one route at a time.<br>
-  Data sourced from registered SACCO websites &amp; NTSA public records.<br>
-  <span style="opacity:.4;font-size:.75rem">Built with Google Sheets + GitHub Pages · Not affiliated with any SACCO</span>
-</footer>
+<!-- ═══ PAGE: LOGIN ═══════════════════════════════════════════ -->
+<div class="page" id="page-login">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="big-icon">🔑</div>
+        <h2>Welcome Back</h2>
+        <p>Sign in to your Safiri Kenya account</p>
+      </div>
+      <div class="msg-box" id="login-msg"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input class="input" id="login-email" type="email" placeholder="john@example.com" onkeyup="loginEnter(event)"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input class="input" id="login-password" type="password" placeholder="Your password" onkeyup="loginEnter(event)"/>
+      </div>
+      <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="auth-switch">New to Safiri Kenya? <a onclick="showPage('register')">Create account</a></div>
+    </div>
+  </div>
+</div>
 
+<!-- ═══ PAGE: PROFILE ═════════════════════════════════════════ -->
+<div class="page" id="page-profile">
+  <div class="profile-page">
+    <div class="profile-header" id="profile-header">
+      <div class="profile-avatar" id="prof-avatar">?</div>
+      <div>
+        <div class="profile-name"  id="prof-name">—</div>
+        <div class="profile-email" id="prof-email">—</div>
+        <div class="profile-role"  id="prof-role">member</div>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <div class="profile-stat-card">
+        <div class="profile-stat-num" id="prof-stat-saccos">—</div>
+        <div class="profile-stat-label">SACCOs in Directory</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat-num" id="prof-stat-counties">—</div>
+        <div class="profile-stat-label">Counties Covered</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="profile-stat-num" id="prof-stat-members">—</div>
+        <div class="profile-stat-label">Community Members</div>
+      </div>
+    </div>
+
+    <div class="profile-info">
+      <h3>Account Details</h3>
+      <div class="info-row"><span class="info-key">Full Name</span>   <span class="info-val" id="pi-name">—</span></div>
+      <div class="info-row"><span class="info-key">Email</span>        <span class="info-val" id="pi-email">—</span></div>
+      <div class="info-row"><span class="info-key">Phone</span>        <span class="info-val" id="pi-contact">—</span></div>
+      <div class="info-row"><span class="info-key">County</span>       <span class="info-val" id="pi-county">—</span></div>
+      <div class="info-row"><span class="info-key">Member Since</span> <span class="info-val" id="pi-date">—</span></div>
+      <div class="info-row"><span class="info-key">Role</span>         <span class="info-val" id="pi-role">—</span></div>
+    </div>
+
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
 <script>
-// ── CONFIG ────────────────────────────────────────────────────
-const CONFIG_KEY = "safiri_api_url";
-const NAME_KEY   = "safiri_site_name";
+// ── CONFIG ───────────────────────────────────────────────────
+const API_URL   = "https://script.google.com/macros/s/AKfycbyoolM_WLdJdI7qEE_VkMPZVk41IueZKZYng5sD9otmnGvKru9bwYrJVw1pO-LogDRq/exec";
+const TOKEN_KEY = "safiri_token";
+const USER_KEY  = "safiri_user";
 
-let allSaccos   = [];
+// ── STATE ────────────────────────────────────────────────────
+let allSaccos      = [];
 let verifiedFilter = "all";
+let currentUser    = null;
 
-function saveConfig() {
-  const url  = document.getElementById("api-url-input").value.trim();
-  const name = document.getElementById("site-name-input").value.trim() || "Safiri Kenya";
-  if (!url) { alert("Please paste your Apps Script URL"); return; }
-  localStorage.setItem(CONFIG_KEY, url);
-  localStorage.setItem(NAME_KEY, name);
-  document.getElementById("site-title").textContent = name;
-  document.title = name + " — Public Transport Directory";
-  document.getElementById("config-overlay").style.display = "none";
-  loadData();
-}
-
-function openConfig() {
-  const url  = localStorage.getItem(CONFIG_KEY) || "";
-  const name = localStorage.getItem(NAME_KEY) || "Safiri Kenya";
-  document.getElementById("api-url-input").value  = url;
-  document.getElementById("site-name-input").value = name;
-  document.getElementById("config-overlay").style.display = "flex";
-}
-
-// ── DEFAULT API URL (pre-configured) ─────────────────────────
-const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyoolM_WLdJdI7qEE_VkMPZVk41IueZKZYng5sD9otmnGvKru9bwYrJVw1pO-LogDRq/exec";
-
-// ── BOOT ──────────────────────────────────────────────────────
+// ── BOOT ─────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Use stored URL, or fall back to the default baked-in URL
-  if (!localStorage.getItem(CONFIG_KEY)) {
-    localStorage.setItem(CONFIG_KEY, DEFAULT_API_URL);
-  }
-  const name = localStorage.getItem(NAME_KEY) || "Safiri Kenya";
-  document.getElementById("site-title").textContent = name;
-  document.title = name + " — Public Transport Directory";
-  document.getElementById("config-overlay").style.display = "none";
+  const saved = localStorage.getItem(USER_KEY);
+  if (saved) { try { currentUser = JSON.parse(saved); } catch(e){} }
+  renderNav();
   loadData();
 });
 
-// ── FETCH DATA ────────────────────────────────────────────────
+// ── NAV ──────────────────────────────────────────────────────
+function renderNav() {
+  const nav = document.getElementById("main-nav");
+  if (currentUser) {
+    const initials = (currentUser.firstName[0] + currentUser.lastName[0]).toUpperCase();
+    nav.innerHTML = `
+      <span style="font-size:.82rem;color:rgba(255,255,255,.7)">Hi, <strong style="color:#fff">${esc(currentUser.firstName)}</strong></span>
+      <div class="nav-avatar" onclick="showPage('profile')" title="My Profile">${initials}</div>`;
+  } else {
+    nav.innerHTML = `
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('login')">Sign In</button>
+      <button class="nav-btn nav-btn-gold"  onclick="showPage('register')">Join Free</button>`;
+  }
+}
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + page).classList.add("active");
+  window.scrollTo(0, 0);
+  // Clear messages on page switch
+  ["reg-msg","login-msg"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = "msg-box"; el.textContent = ""; }
+  });
+}
+
+// ── LOAD SACCOS ──────────────────────────────────────────────
 async function loadData() {
-  const url = localStorage.getItem(CONFIG_KEY);
   showLoading();
   try {
-    const res  = await fetch(`${url}?action=list`);
+    const res  = await fetch(`${API_URL}?action=list`);
     const json = await res.json();
     if (json.error) throw new Error(json.error);
     allSaccos = json.saccos || [];
@@ -657,167 +565,219 @@ async function loadData() {
     updateStats();
     renderCards(allSaccos);
     document.getElementById("last-updated").textContent = new Date().toLocaleDateString("en-KE");
-  } catch (err) {
-    showError(err.message);
-  }
+  } catch(err) { showError(err.message); }
 }
 
-// ── SEARCH ────────────────────────────────────────────────────
-function handleSearch(e) {
-  if (e.key === "Enter") doSearch();
-}
-
+// ── SEARCH ───────────────────────────────────────────────────
+function handleSearch(e) { if (e.key === "Enter") doSearch(); }
 async function doSearch() {
-  const q   = document.getElementById("search-input").value.trim();
-  const url = localStorage.getItem(CONFIG_KEY);
+  const q = document.getElementById("search-input").value.trim();
   if (!q) { applyFilters(); return; }
-
   showLoading();
   try {
-    const res  = await fetch(`${url}?action=search&q=${encodeURIComponent(q)}`);
+    const res  = await fetch(`${API_URL}?action=search&q=${encodeURIComponent(q)}`);
     const json = await res.json();
     allSaccos  = json.saccos || [];
     renderCards(allSaccos);
     document.getElementById("filter-status").textContent = `Search: "${q}"`;
-  } catch (err) {
-    showError(err.message);
-  }
+  } catch(err) { showError(err.message); }
 }
 
-// ── FILTERS ───────────────────────────────────────────────────
+// ── FILTERS ──────────────────────────────────────────────────
 function populateFilters() {
-  const counties = [...new Set(allSaccos.map(s => s.county).filter(Boolean))].sort();
-  const routes   = [...new Set(allSaccos.map(s => s.route).filter(Boolean))].sort();
-
+  const counties = [...new Set(allSaccos.map(s=>s.county).filter(Boolean))].sort();
+  const routes   = [...new Set(allSaccos.map(s=>s.route).filter(Boolean))].sort();
   const cf = document.getElementById("county-filter");
   const rf = document.getElementById("route-filter");
-
-  counties.forEach(c => {
-    const o = document.createElement("option"); o.value = c; o.textContent = c; cf.appendChild(o);
-  });
-  routes.forEach(r => {
-    const o = document.createElement("option"); o.value = r; o.textContent = r; rf.appendChild(o);
-  });
+  counties.forEach(c => { const o=document.createElement("option"); o.value=c; o.textContent=c; cf.appendChild(o); });
+  routes.forEach(r   => { const o=document.createElement("option"); o.value=r; o.textContent=r; rf.appendChild(o); });
 }
-
 function applyFilters() {
   const county  = document.getElementById("county-filter").value;
   const route   = document.getElementById("route-filter").value;
   let filtered  = allSaccos;
-
   if (county) filtered = filtered.filter(s => s.county === county);
   if (route)  filtered = filtered.filter(s => s.route  === route);
-  if (verifiedFilter === "yes") filtered = filtered.filter(s => s.verified?.toLowerCase() === "yes");
-  if (verifiedFilter === "no")  filtered = filtered.filter(s => s.verified?.toLowerCase() !== "yes");
-
+  if (verifiedFilter === "yes") filtered = filtered.filter(s => s.verified?.toString().toLowerCase() === "yes");
+  if (verifiedFilter === "no")  filtered = filtered.filter(s => s.verified?.toString().toLowerCase() !== "yes");
   renderCards(filtered);
-  document.getElementById("filter-status").textContent =
-    [county && `County: ${county}`, route && `Route: ${route}`].filter(Boolean).join(" · ");
+  document.getElementById("filter-status").textContent = [county&&`County: ${county}`, route&&`Route: ${route}`].filter(Boolean).join(" · ");
 }
-
 function setVerified(val) {
   verifiedFilter = val;
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-  document.getElementById(`chip-${val === "all" ? "all" : val === "yes" ? "verified" : "unverified"}`).classList.add("active");
+  const map = {all:"chip-all", yes:"chip-verified", no:"chip-unverified"};
+  document.getElementById(map[val]).classList.add("active");
   applyFilters();
 }
 
-// ── STATS ─────────────────────────────────────────────────────
+// ── STATS ────────────────────────────────────────────────────
 function updateStats() {
   document.getElementById("stat-saccos").textContent   = allSaccos.length;
-  document.getElementById("stat-counties").textContent = [...new Set(allSaccos.map(s => s.county).filter(Boolean))].length;
-  document.getElementById("stat-verified").textContent = allSaccos.filter(s => s.verified?.toLowerCase() === "yes").length;
+  document.getElementById("stat-counties").textContent = [...new Set(allSaccos.map(s=>s.county).filter(Boolean))].length;
+  document.getElementById("stat-verified").textContent = allSaccos.filter(s=>s.verified?.toString().toLowerCase()==="yes").length;
+  // Profile stats mirror
+  document.getElementById("prof-stat-saccos").textContent   = allSaccos.length;
+  document.getElementById("prof-stat-counties").textContent = [...new Set(allSaccos.map(s=>s.county).filter(Boolean))].length;
 }
 
-// ── RENDER ────────────────────────────────────────────────────
+// ── RENDER CARDS ─────────────────────────────────────────────
 function renderCards(saccos) {
-  const container = document.getElementById("cards-container");
-  document.getElementById("result-count").textContent = `${saccos.length} result${saccos.length !== 1 ? "s" : ""}`;
-
+  const c = document.getElementById("cards-container");
+  document.getElementById("result-count").textContent = `${saccos.length} result${saccos.length!==1?"s":""}`;
   if (!saccos.length) {
-    container.innerHTML = `
-      <div class="state-box" style="grid-column:1/-1">
-        <span class="icon">🔍</span>
-        <h3>No results found</h3>
-        <p>Try a different search term or clear the filters.</p>
-      </div>`;
+    c.innerHTML = `<div class="state-box"><span class="icon">🔍</span><h3>No results</h3><p>Try a different search or clear filters.</p></div>`;
     return;
   }
-
-  container.innerHTML = saccos.map((s, i) => {
-    const isVerified  = s.verified?.toLowerCase() === "yes";
-    const websiteLink = s.website
-      ? `<a class="card-link link-site" href="${escHtml(s.website)}" target="_blank" rel="noopener">🌐 Website</a>`
+  c.innerHTML = saccos.map((s,i) => {
+    const isV = s.verified?.toString().toLowerCase() === "yes";
+    const web = s.website
+      ? `<a class="card-link link-site" href="${esc(s.website)}" target="_blank" rel="noopener">🌐 Website</a>`
       : `<span class="card-link" style="background:var(--surface);color:var(--muted);border:1.5px solid var(--border)">No website</span>`;
-    const telLink = s.contact
-      ? `<a class="card-link link-tel" href="tel:${escHtml(s.contact)}">📞 Call</a>`
-      : "";
-
+    const tel = s.contact ? `<a class="card-link link-tel" href="tel:${esc(s.contact)}">📞 Call</a>` : "";
     return `
-      <div class="card" style="animation-delay:${i * 0.04}s">
+      <div class="card" style="animation-delay:${i*.04}s">
         <div class="card-header">
-          <div class="sacco-name">${escHtml(s.saccoName || "Unnamed SACCO")}</div>
-          <div class="verified-badge ${isVerified ? "yes" : "no"}">
-            ${isVerified ? "✅ Verified" : "⚠️ Unverified"}
-          </div>
+          <div class="sacco-name">${esc(s.saccoName||"Unnamed SACCO")}</div>
+          <div class="badge ${isV?"yes":"no"}">${isV?"✅ Verified":"⚠️ Unverified"}</div>
         </div>
-
         <div class="route-pill">
-          <span>${escHtml(s.from || "—")}</span>
-          <span class="route-arrow">→</span>
-          <span>${escHtml(s.to || "—")}</span>
+          <span>${esc(s.from||"—")}</span><span class="route-arrow">→</span><span>${esc(s.to||"—")}</span>
         </div>
-
         <div class="card-meta">
-          <div class="meta-item">
-            <span class="meta-label">County</span>
-            <span class="meta-value">${escHtml(s.county || "—")}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Terminus</span>
-            <span class="meta-value">${escHtml(s.terminus || "—")}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Fare</span>
-            <span class="meta-value fare-highlight">KES ${escHtml(String(s.fareKes || "—"))}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Route</span>
-            <span class="meta-value">${escHtml(s.route || "—")}</span>
-          </div>
+          <div class="meta-item"><span class="meta-label">County</span>  <span class="meta-value">${esc(s.county||"—")}</span></div>
+          <div class="meta-item"><span class="meta-label">Terminus</span><span class="meta-value">${esc(s.terminus||"—")}</span></div>
+          <div class="meta-item"><span class="meta-label">Fare</span>    <span class="meta-value fare-val">KES ${esc(String(s.fareKes||"—"))}</span></div>
+          <div class="meta-item"><span class="meta-label">Route</span>   <span class="meta-value">${esc(s.route||"—")}</span></div>
         </div>
-
-        <div class="card-footer">
-          ${websiteLink}
-          ${telLink}
-        </div>
+        <div class="card-footer">${web}${tel}</div>
       </div>`;
   }).join("");
 }
 
-// ── UI STATES ─────────────────────────────────────────────────
+// ── REGISTER ─────────────────────────────────────────────────
+async function doRegister() {
+  const msg = document.getElementById("reg-msg");
+  const btn = document.getElementById("reg-btn");
+
+  const fname    = document.getElementById("reg-fname").value.trim();
+  const lname    = document.getElementById("reg-lname").value.trim();
+  const email    = document.getElementById("reg-email").value.trim();
+  const contact  = document.getElementById("reg-contact").value.trim();
+  const county   = document.getElementById("reg-county").value;
+  const password = document.getElementById("reg-password").value;
+  const confirm  = document.getElementById("reg-confirm").value;
+
+  if (!fname || !lname || !email || !password)
+    return showMsg(msg, "Please fill in all required fields.", "error");
+  if (password !== confirm)
+    return showMsg(msg, "Passwords do not match.", "error");
+  if (password.length < 6)
+    return showMsg(msg, "Password must be at least 6 characters.", "error");
+
+  btn.disabled = true; btn.textContent = "Creating account…";
+  try {
+    const url = `${API_URL}?action=register&firstName=${enc(fname)}&lastName=${enc(lname)}&email=${enc(email)}&contact=${enc(contact)}&county=${enc(county)}&password=${enc(password)}`;
+    const res  = await fetch(url);
+    const json = await res.json();
+    if (json.error) { showMsg(msg, json.error, "error"); return; }
+    showMsg(msg, "🎉 Account created! Signing you in…", "success");
+    setUser(json.user);
+    setTimeout(() => showPage("profile"), 1200);
+  } catch(err) {
+    showMsg(msg, "Network error. Please try again.", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = "Create Account →";
+  }
+}
+
+// ── LOGIN ────────────────────────────────────────────────────
+function loginEnter(e) { if (e.key === "Enter") doLogin(); }
+async function doLogin() {
+  const msg = document.getElementById("login-msg");
+  const btn = document.getElementById("login-btn");
+  const email    = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  if (!email || !password) return showMsg(msg, "Please enter email and password.", "error");
+
+  btn.disabled = true; btn.textContent = "Signing in…";
+  try {
+    const url  = `${API_URL}?action=login&email=${enc(email)}&password=${enc(password)}`;
+    const res  = await fetch(url);
+    const json = await res.json();
+    if (json.error) { showMsg(msg, json.error, "error"); return; }
+    showMsg(msg, "✅ Welcome back!", "success");
+    setUser(json.user);
+    setTimeout(() => showPage("profile"), 800);
+  } catch(err) {
+    showMsg(msg, "Network error. Please try again.", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = "Sign In →";
+  }
+}
+
+// ── LOGOUT ───────────────────────────────────────────────────
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  renderNav();
+  showPage("home");
+}
+
+// ── PROFILE ──────────────────────────────────────────────────
+function setUser(user) {
+  currentUser = user;
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  renderNav();
+  renderProfile();
+  // Update member count (rough: just show a live fetch isn't needed for display)
+  document.getElementById("stat-users").textContent = "✓";
+  document.getElementById("prof-stat-members").textContent = "✓";
+}
+
+function renderProfile() {
+  if (!currentUser) return;
+  const u = currentUser;
+  const initials = ((u.firstName||"?")[0] + (u.lastName||"?")[0]).toUpperCase();
+  document.getElementById("prof-avatar").textContent = initials;
+  document.getElementById("prof-name").textContent   = `${u.firstName} ${u.lastName}`;
+  document.getElementById("prof-email").textContent  = u.email;
+  document.getElementById("prof-role").textContent   = u.role || "member";
+  document.getElementById("pi-name").textContent     = `${u.firstName} ${u.lastName}`;
+  document.getElementById("pi-email").textContent    = u.email;
+  document.getElementById("pi-contact").textContent  = u.contact || "Not provided";
+  document.getElementById("pi-county").textContent   = u.county  || "Not provided";
+  document.getElementById("pi-role").textContent     = u.role    || "member";
+  document.getElementById("pi-date").textContent     = u.createdAt
+    ? new Date(u.createdAt).toLocaleDateString("en-KE", {year:"numeric",month:"long",day:"numeric"})
+    : "—";
+}
+
+// On profile page load, refresh from server
+document.getElementById("page-profile").addEventListener("click", function() {}, {once: false});
+
+// Auto-render profile if user is stored
+window.addEventListener("DOMContentLoaded", () => { if (currentUser) renderProfile(); });
+
+// ── STATE UI ─────────────────────────────────────────────────
 function showLoading() {
-  document.getElementById("cards-container").innerHTML = `
-    <div class="state-box" style="grid-column:1/-1">
-      <div class="spinner"></div>
-      <h3>Loading…</h3>
-    </div>`;
+  document.getElementById("cards-container").innerHTML =
+    `<div class="state-box"><div class="spinner"></div><h3>Loading…</h3></div>`;
 }
-
 function showError(msg) {
-  document.getElementById("cards-container").innerHTML = `
-    <div class="state-box" style="grid-column:1/-1">
-      <span class="icon">❌</span>
-      <h3>Could not load data</h3>
-      <p>${escHtml(msg)}<br><br>Check your Apps Script URL in ⚙️ Settings.</p>
-    </div>`;
+  document.getElementById("cards-container").innerHTML =
+    `<div class="state-box"><span class="icon">❌</span><h3>Could not load data</h3><p>${esc(msg)}</p></div>`;
+}
+function showMsg(el, text, type) {
+  el.textContent = text;
+  el.className   = "msg-box " + type;
 }
 
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
+// ── UTILS ────────────────────────────────────────────────────
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function enc(s) { return encodeURIComponent(s); }
 </script>
 </body>
 </html>
